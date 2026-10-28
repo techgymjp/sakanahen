@@ -6,66 +6,83 @@
 <title>さかなへんクイズ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="sea" id="sea" aria-hidden="true"></div>
+<button id="btn-mute" class="mute" aria-label="効果音のオン・オフ">🔊</button>
 <main id="app">
 
   <section id="screen-title" class="screen active">
-    <h1 class="logo"><span class="logo-k">魚</span>さかなへんクイズ</h1>
-    <p class="lead">全20問・4択。正解数とスピードを競おう！</p>
-    <ul class="rules">
-      <li><b>前半 8問</b>（お馴染みの魚）…本物の漢字を、そっくりな<b>ニセ漢字</b>の中から見抜け！</li>
-      <li><b>後半 12問</b>（難読の魚）…読みに合う<b>実在の漢字</b>を選べ！</li>
-      <li>順位は <b>正解数</b> → <b>タイム</b> の順で決まります。</li>
-    </ul>
-    <label class="name">名前 <input id="player-name" maxlength="12" placeholder="ななしの釣り人"></label>
-    <div class="buttons">
-      <button id="btn-start" class="primary">スタート</button>
-      <button id="btn-zukan">漢字図鑑</button>
+    <h1 class="logo"><span class="logo-k">魚</span>さかなへん<br>クイズ</h1>
+    <p class="lead">全20問・4択！ 正解数とスピードで勝負だ！</p>
+    <div class="panel">
+      <ul class="rules">
+        <li><b>前半 8問</b>（お馴染みの魚）<br>本物の漢字を、そっくりな<b>ニセ漢字</b>の中から見抜け！</li>
+        <li><b>後半 12問</b>（難読の魚）<br>読みに合う<b>実在の漢字</b>を選べ！</li>
+        <li>順位は <b>正解数</b> → <b>タイム</b> の順で決まるよ</li>
+      </ul>
     </div>
-    <h2>ランキング</h2>
-    <ol id="ranking" class="ranking"></ol>
+    <label class="name">なまえ <input id="player-name" maxlength="12" placeholder="ななしの釣り人"></label>
+    <div class="buttons">
+      <button id="btn-start" class="primary pulse">スタート！</button>
+      <button id="btn-zukan" class="yellow">📖 漢字図鑑</button>
+    </div>
+    <h2 class="title-h">🏆 ランキング</h2>
+    <div class="panel">
+      <ol id="ranking" class="ranking"></ol>
+    </div>
   </section>
 
   <section id="screen-quiz" class="screen">
     <header class="hud">
-      <span id="q-num">1 / 20</span>
-      <span id="q-level" class="badge"></span>
-      <span id="q-score">正解 0</span>
-      <span id="q-time">0.0秒</span>
+      <span id="q-num" class="chip">1 / 20</span>
+      <span id="q-level" class="chip badge"></span>
+      <span id="q-score" class="chip">⭕ 0</span>
+      <span id="q-time" class="chip">⏱ 0.0</span>
     </header>
     <div class="progress"><div id="progress-bar"></div></div>
-    <p id="q-text" class="question"></p>
+    <div class="panel">
+      <p id="q-text" class="question"></p>
+    </div>
     <div id="choices" class="choices"></div>
     <div id="feedback" class="feedback"></div>
   </section>
 
   <section id="screen-result" class="screen">
-    <h2>結果</h2>
-    <p class="big"><span id="r-correct"></span> / 20 問正解</p>
-    <p class="big">タイム <span id="r-time"></span> 秒</p>
+    <h2 class="result-title">🎉 けっか 🎉</h2>
+    <div class="score-row">
+      <div class="score-box"><div class="lbl">正解数</div><div class="val"><span id="r-correct"></span><small> / 20</small></div></div>
+      <div class="score-box"><div class="lbl">タイム</div><div class="val"><span id="r-time"></span><small> 秒</small></div></div>
+    </div>
     <p id="r-rank" class="rank-msg"></p>
     <div class="buttons">
-      <button id="btn-retry" class="primary">もう一度</button>
-      <button id="btn-home">タイトルへ</button>
+      <button id="btn-retry" class="primary">もう一度！</button>
+      <button id="btn-home" class="yellow">タイトルへ</button>
     </div>
-    <h3>ふりかえり</h3>
-    <ol id="review" class="review"></ol>
+    <div class="panel">
+      <h3>ふりかえり</h3>
+      <ol id="review" class="review"></ol>
+    </div>
   </section>
 
   <section id="screen-zukan" class="screen">
-    <h2>漢字図鑑 <small id="z-count"></small></h2>
-    <button class="back" data-home>← タイトルへ</button>
-    <h3>お馴染みの魚</h3>
-    <div id="zukan-easy" class="zukan"></div>
-    <h3>難読の魚へん</h3>
-    <div id="zukan-hard" class="zukan"></div>
+    <h2 class="zukan-title">📖 漢字図鑑 <small id="z-count"></small></h2>
+    <button class="back yellow" data-home>← タイトルへ</button>
+    <div class="panel">
+      <h3>🐟 お馴染みの魚</h3>
+      <div id="zukan-easy" class="zukan"></div>
+    </div>
+    <div class="panel">
+      <h3>🐡 難読の魚へん</h3>
+      <div id="zukan-hard" class="zukan"></div>
+    </div>
   </section>
 
 </main>
 <script src="data.js"></script>
+<script src="sound.js"></script>
 <script src="game.js"></script>
 </body>
 </html>
