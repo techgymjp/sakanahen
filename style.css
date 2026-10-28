@@ -1,0 +1,93 @@
+:root {
+  --bg: #eaf4f8;
+  --card: #ffffff;
+  --ink: #1d2b36;
+  --sub: #5b6f7d;
+  --accent: #0d6e9e;
+  --ok: #1f9d55;
+  --ng: #d64545;
+  --line: #cfdfe7;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1a21;
+    --card: #182630;
+    --ink: #e6eef2;
+    --sub: #93a8b5;
+    --accent: #4fb3e0;
+    --ok: #4cc27f;
+    --ng: #f07171;
+    --line: #2b3d49;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif;
+}
+#app { max-width: 640px; margin: 0 auto; padding: 16px; }
+.screen { display: none; }
+.screen.active { display: block; }
+
+.logo { font-size: 2rem; text-align: center; margin: 24px 0 8px; }
+.logo-k { color: var(--accent); margin-right: .2em; }
+.lead { text-align: center; color: var(--sub); }
+.rules { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 12px 12px 32px; line-height: 1.8; }
+.name { display: block; margin: 16px 0; text-align: center; }
+.name input { font: inherit; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink); width: 12em; }
+.buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 16px 0; }
+button {
+  font: inherit; font-size: 1.05rem; padding: 10px 22px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer;
+}
+button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+button:disabled { cursor: default; }
+
+.ranking, .review { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 12px 12px 40px; }
+.ranking li { padding: 4px 0; display: flex; gap: 8px; }
+.ranking .rn { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ranking .rs { font-variant-numeric: tabular-nums; }
+.ranking .me { color: var(--accent); font-weight: 700; }
+.ranking:empty::before { content: "まだ記録がありません"; color: var(--sub); margin-left: -28px; }
+
+.hud { display: flex; justify-content: space-between; align-items: center; font-variant-numeric: tabular-nums; gap: 8px; }
+.badge { font-size: .8rem; padding: 2px 10px; border-radius: 999px; background: var(--accent); color: #fff; }
+.badge.hard { background: #8a4fd0; }
+.progress { height: 6px; background: var(--line); border-radius: 3px; margin: 10px 0 20px; overflow: hidden; }
+#progress-bar { height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+.question { font-size: 1.3rem; text-align: center; margin: 12px 0 20px; min-height: 2em; }
+.question b { font-size: 1.7rem; color: var(--accent); }
+
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.choice {
+  font-size: clamp(64px, 20vw, 110px); line-height: 1; padding: 18px 0;
+  border-radius: 16px; display: flex; justify-content: center; align-items: center;
+}
+.choice.ok { border-color: var(--ok); box-shadow: 0 0 0 3px var(--ok) inset; }
+.choice.ng { border-color: var(--ng); box-shadow: 0 0 0 3px var(--ng) inset; opacity: .7; }
+.choice:not(:disabled):hover { border-color: var(--accent); }
+
+/* 魚＋つくり を合成して1文字に見せる（お馴染み問題は正解もニセも同じ方法で描画） */
+.kc { position: relative; display: inline-block; width: 1em; height: 1em; }
+.kc span { position: absolute; top: 0; width: 1em; height: 1em; line-height: 1; transform-origin: 0 50%; }
+.kc .h { left: 0; transform: scaleX(.44); }
+.kc .t { left: .4em; transform: scaleX(.6); }
+
+.feedback { text-align: center; min-height: 3em; margin-top: 18px; font-size: 1.2rem; }
+.feedback .ok { color: var(--ok); font-weight: 700; }
+.feedback .ng { color: var(--ng); font-weight: 700; }
+
+.big { font-size: 1.6rem; text-align: center; margin: 8px 0; }
+.rank-msg { text-align: center; color: var(--accent); font-weight: 700; }
+.review li { padding: 4px 0; }
+.review .k { font-size: 1.5rem; margin-right: 6px; }
+.review .mark-ok { color: var(--ok); }
+.review .mark-ng { color: var(--ng); }
+
+.back { margin-bottom: 8px; font-size: .9rem; padding: 6px 14px; }
+.zukan { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.zukan div { background: var(--card); border: 1px solid var(--line); border-radius: 10px; text-align: center; padding: 6px 4px; }
+.zukan .k { font-size: 2.2rem; display: block; }
+.zukan .y { font-size: .75rem; color: var(--sub); }
