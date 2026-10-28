@@ -2,10 +2,18 @@
 
 const TOTAL = 20;
 const EASY_COUNT = 8;              // 前半：お馴染み（ニセ漢字から選ぶ）
-const HARD_COUNT = TOTAL - EASY_COUNT; // 後半：難読（実在の漢字から選ぶ）
+const HARD_COUNT = TOTAL - EASY_COUNT; // 後半：難読（漢字を見て読みを選ぶ）
 const RANK_KEY = 'sakanahen-ranking';
 const NAME_KEY = 'sakanahen-name';
 const ALL = [...EASY, ...HARD];
+// 難読問題に出すのは生き物の漢字だけ（生き物以外の字は図鑑のみ）
+const HARD_QUIZ = HARD.filter((e) => e.c !== 'other');
+// 読みの選択肢に使う実在の名前（魚の名前／魚以外の水の生き物の名前）
+const NAMES = {};
+for (const e of ALL) {
+  if (e.c === 'other') continue;
+  (NAMES[e.c] ??= new Set()).add(e.y[0]);
+}
 
 const $ = (id) => document.getElementById(id);
 
@@ -18,26 +26,16 @@ function shuffle(a) {
   return a;
 }
 
-function sharesReading(a, b) {
-  return a.y.some((y) => b.y.includes(y));
-}
-
 // お馴染み問題：正解のつくり＋ニセのつくり3つ（すべて合成描画）
 function makeEasyQuestion(e) {
   const choices = shuffle([e.t, ...e.f]).map((t) => ({ t, correct: t === e.t }));
   return { level: 'easy', item: e, choices };
 }
 
-// 難読問題：正解＋読みが重ならない実在の魚へん漢字3つ
+// 難読問題：漢字を見せて、正しい読み＋同じ分類の実在の名前3つから選ぶ
 function makeHardQuestion(e) {
-  const pool = shuffle(HARD.filter((x) => x !== e && !sharesReading(x, e)));
-  const picked = [];
-  for (const x of pool) {
-    if (picked.length === 3) break;
-    if (picked.some((p) => sharesReading(p, x))) continue;
-    picked.push(x);
-  }
-  const choices = shuffle([e, ...picked]).map((x) => ({ k: x.k, correct: x === e }));
+  const others = shuffle([...NAMES[e.c]].filter((y) => !e.y.includes(y))).slice(0, 3);
+  const choices = shuffle([e.y[0], ...others]).map((y) => ({ y, correct: y === e.y[0] }));
   return { level: 'hard', item: e, choices };
 }
 
@@ -86,7 +84,7 @@ function startGame() {
   try { localStorage.setItem(NAME_KEY, name); } catch {}
   const qs = [
     ...shuffle(EASY).slice(0, EASY_COUNT).map(makeEasyQuestion),
-    ...shuffle(HARD).slice(0, HARD_COUNT).map(makeHardQuestion),
+    ...shuffle(HARD_QUIZ).slice(0, HARD_COUNT).map(makeHardQuestion),
   ];
   game = { name, qs, index: 0, correct: 0, elapsed: 0, qStart: 0, answers: [] };
   Sound.start();
@@ -112,18 +110,21 @@ function showQuestion() {
   badge.className = 'chip badge' + (q.level === 'hard' ? ' hard' : '');
 
   const qt = $('q-text');
-  qt.innerHTML = q.level === 'easy'
-    ? '「<b></b>」の<em>本物</em>の漢字はどれ？'
-    : '「<b></b>」と読む漢字はどれ？';
-  qt.querySelector('b').textContent = q.item.y[0];
+  if (q.level === 'easy') {
+    qt.innerHTML = '「<b></b>」の<em>本物</em>の漢字はどれ？';
+    qt.querySelector('b').textContent = q.item.y[0];
+  } else {
+    qt.innerHTML = '<span class="q-kanji"></span>この漢字の<em>読み</em>はどれ？';
+    qt.querySelector('.q-kanji').textContent = q.item.k;
+  }
 
   const box = $('choices');
   box.innerHTML = '';
   q.choices.forEach((c, i) => {
     const b = document.createElement('button');
-    b.className = 'choice';
+    b.className = 'choice' + (q.level === 'hard' ? ' yomi' : '');
     if (q.level === 'easy') b.appendChild(renderComposed(c.t));
-    else b.textContent = c.k;
+    else b.textContent = c.y;
     b.addEventListener('click', () => answer(i));
     box.appendChild(b);
   });
