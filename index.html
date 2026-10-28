@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>さかなへんクイズ</title>
+<meta name="description" content="魚へんの漢字を当てる4択クイズ。全20問、正解数とスピードで勝負！">
+<meta property="og:type" content="website">
+<meta property="og:title" content="さかなへんクイズ">
+<meta property="og:description" content="魚へんの漢字を当てる4択クイズ。全20問、正解数とスピードで勝負！">
+<meta property="og:url" content="https://techgymjp.github.io/sakanahen/">
+<meta name="twitter:card" content="summary">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
@@ -71,6 +77,16 @@
       <div class="score-box"><div class="lbl">タイム</div><div class="val"><span id="r-time"></span><small> 秒</small></div></div>
     </div>
     <p id="r-rank" class="rank-msg"></p>
+    <div class="share">
+      <p class="share-label">結果をシェアしよう！</p>
+      <div class="share-buttons">
+        <a id="share-x" class="share-btn x" target="_blank" rel="noopener">𝕏 ポスト</a>
+        <a id="share-line" class="share-btn line" target="_blank" rel="noopener">LINE</a>
+        <a id="share-fb" class="share-btn fb" target="_blank" rel="noopener">Facebook</a>
+        <button id="share-more" class="share-btn more" hidden>その他</button>
+        <button id="share-copy" class="share-btn copy">リンクをコピー</button>
+      </div>
+    </div>
     <div class="buttons">
       <button id="btn-retry" class="primary">もう一度！</button>
       <button id="btn-home" class="yellow">タイトルへ</button>
