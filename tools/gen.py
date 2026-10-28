@@ -171,7 +171,7 @@ HARD = """
 鱎 みごい
 鱏 えい,かじき
 鱐 ほしうお
-鱓 ごまめ,うつぼ,うみへび
+鱓 うつぼ,ごまめ,うみへび
 鱔 うみへび,ごまめ
 鱖 さけ
 鱘 ちょうざめ,かじき
@@ -197,13 +197,21 @@ HARD = """
 魡 つる
 """
 
+# 難読問題は漢字を見せて読みを選ぶ。選択肢は実在の生き物名にするため分類する
+# fish: 魚の名前 / creature: 魚以外の水の生き物 / other: 生き物以外（出題せず図鑑のみ）
+CREATURE = set('いか たこ えび うみえび はまぐり あさり あわび とど いるか しゃち くじら わに すっぽん かぶとがに さんしょううお あおうみがめ おおがめ うみへび'.split())
+OTHER = set('えり あざやか なまぐさい はらご はらわた かずのこ からすみ すし なます ほしうお ひもの うきぶくろ うろこ えら ひれ やもお やもめ くさる あたらしい つる するめ せんざんこう'.split())
+
+def category(y):
+    return 'creature' if y in CREATURE else 'other' if y in OTHER else 'fish'
+
 easy = []
 for l in EASY.strip().splitlines():
     k, y, t, cands = l.split()
     assert t in real, (k, t)
     fakes = [c for c in cands if c not in real and c != t]
     assert len(fakes) >= 3, (k, fakes)
-    easy.append({"k": k, "y": [y], "t": t, "f": fakes[:3]})
+    easy.append({"k": k, "y": [y], "t": t, "f": fakes[:3], "c": category(y)})
 
 hard = []
 seen = {e["k"] for e in easy}
@@ -211,12 +219,13 @@ for l in HARD.strip().splitlines():
     k, ys = l.split()
     assert k not in seen, k
     seen.add(k)
-    hard.append({"k": k, "y": ys.split(',')})
+    ys = ys.split(',')
+    hard.append({"k": k, "y": ys, "c": category(ys[0])})
 
 print(len(easy), len(hard), len(easy) + len(hard), file=sys.stderr)
 with open(out_path, 'w', encoding='utf-8') as f:
     f.write('// さかなへんクイズ 出題データ（gen.py で生成）\n')
     f.write('// EASY: お馴染みの魚。t=つくり, f=偽のつくり（実在しない組み合わせ）\n')
-    f.write('// HARD: 難読の魚へん漢字。y=よみ（先頭が出題用）\n')
+    f.write('// HARD: 難読の魚へん漢字。y=よみ（先頭が出題用）, c=分類（fish/creature/other）\n')
     f.write('const EASY = ' + json.dumps(easy, ensure_ascii=False, indent=0).replace('\n', '') + ';\n')
     f.write('const HARD = ' + json.dumps(hard, ensure_ascii=False, indent=0).replace('\n', '') + ';\n')
