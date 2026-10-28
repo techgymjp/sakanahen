@@ -89,6 +89,7 @@ function startGame() {
     ...shuffle(HARD).slice(0, HARD_COUNT).map(makeHardQuestion),
   ];
   game = { name, qs, index: 0, correct: 0, elapsed: 0, qStart: 0, answers: [] };
+  Sound.start();
   show('screen-quiz');
   showQuestion();
 }
@@ -98,21 +99,21 @@ function currentTime() {
 }
 
 function tick() {
-  $('q-time').textContent = currentTime().toFixed(1) + '秒';
+  $('q-time').textContent = '⏱ ' + currentTime().toFixed(1);
 }
 
 function showQuestion() {
   const q = game.qs[game.index];
   $('q-num').textContent = `${game.index + 1} / ${TOTAL}`;
-  $('q-score').textContent = `正解 ${game.correct}`;
+  $('q-score').textContent = `⭕ ${game.correct}`;
   $('progress-bar').style.width = (game.index / TOTAL * 100) + '%';
   const badge = $('q-level');
   badge.textContent = q.level === 'easy' ? 'お馴染み' : '難読';
-  badge.className = 'badge' + (q.level === 'hard' ? ' hard' : '');
+  badge.className = 'chip badge' + (q.level === 'hard' ? ' hard' : '');
 
   const qt = $('q-text');
   qt.innerHTML = q.level === 'easy'
-    ? '「<b></b>」の<b style="font-size:inherit;color:inherit">本物</b>の漢字はどれ？'
+    ? '「<b></b>」の<em>本物</em>の漢字はどれ？'
     : '「<b></b>」と読む漢字はどれ？';
   qt.querySelector('b').textContent = q.item.y[0];
 
@@ -127,6 +128,7 @@ function showQuestion() {
     box.appendChild(b);
   });
   $('feedback').innerHTML = '';
+  Sound.bubble();
 
   game.qStart = performance.now();
   clearInterval(timerId);
@@ -145,14 +147,17 @@ function answer(i) {
   const ok = q.choices[i].correct;
   if (ok) game.correct++;
   game.answers.push({ item: q.item, ok });
-  $('q-score').textContent = `正解 ${game.correct}`;
+  $('q-score').textContent = `⭕ ${game.correct}`;
+  if (ok) Sound.correct(); else Sound.wrong();
 
   const buttons = [...$('choices').children];
   buttons.forEach((b, j) => {
     b.disabled = true;
     if (q.choices[j].correct) b.classList.add('ok');
     else if (j === i) b.classList.add('ng');
+    else b.classList.add('dim');
   });
+  if (ok) burst(buttons[i]);
 
   const fb = $('feedback');
   const yomi = q.item.y.join('・');
@@ -180,13 +185,14 @@ function finish() {
 
   $('r-correct').textContent = game.correct;
   $('r-time').textContent = time.toFixed(1);
-  $('r-rank').textContent = rank <= 10 ? `ランキング ${rank} 位！` : 'ランキング圏外…もう一度挑戦！';
+  $('r-rank').textContent = rank <= 10 ? `🏆 ランキング ${rank} 位！` : 'ランキング圏外…もう一度挑戦！';
+  Sound.fanfare(game.correct >= TOTAL / 2);
 
   const ol = $('review');
   ol.innerHTML = '';
   for (const a of game.answers) {
     const li = document.createElement('li');
-    li.innerHTML = `<span class="${a.ok ? 'mark-ok' : 'mark-ng'}">${a.ok ? '○' : '×'}</span> <span class="k"></span><span class="y"></span>`;
+    li.innerHTML = `<span class="${a.ok ? 'mark-ok' : 'mark-ng'}">${a.ok ? '○' : '×'}</span><span class="k"></span><span class="y"></span>`;
     li.querySelector('.k').textContent = a.item.k;
     li.querySelector('.y').textContent = a.item.y.join('・');
     ol.appendChild(li);
@@ -214,9 +220,57 @@ function renderZukan() {
   show('screen-zukan');
 }
 
+// ---- 演出 ----
+// 正解したボタンから泡と魚を飛ばす
+function burst(el) {
+  const r = el.getBoundingClientRect();
+  const icons = ['🫧', '🫧', '🐟', '🐠', '✨'];
+  for (let n = 0; n < 10; n++) {
+    const s = document.createElement('span');
+    s.className = 'burst';
+    s.textContent = icons[n % icons.length];
+    const a = Math.random() * Math.PI * 2;
+    const d = 70 + Math.random() * 70;
+    s.style.left = r.left + r.width / 2 - 13 + 'px';
+    s.style.top = r.top + r.height / 2 - 13 + 'px';
+    s.style.setProperty('--dx', Math.cos(a) * d + 'px');
+    s.style.setProperty('--dy', Math.sin(a) * d + 'px');
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 900);
+  }
+}
+
+// 背景の泡と泳ぐ魚
+function makeSea() {
+  const sea = $('sea');
+  for (let n = 0; n < 16; n++) {
+    const b = document.createElement('span');
+    b.className = 'bubble';
+    const size = 8 + Math.random() * 28;
+    b.style.width = b.style.height = size + 'px';
+    b.style.left = Math.random() * 100 + '%';
+    b.style.animationDuration = 8 + Math.random() * 10 + 's';
+    b.style.animationDelay = -Math.random() * 18 + 's';
+    sea.appendChild(b);
+  }
+  ['🐟', '🐠', '🐡', '🦈'].forEach((f, n) => {
+    const s = document.createElement('span');
+    s.className = 'swim' + (n % 2 ? ' rev' : '');
+    s.textContent = f;
+    s.style.top = 12 + n * 22 + '%';
+    s.style.animationDuration = 18 + n * 6 + 's';
+    s.style.animationDelay = -n * 5 + 's';
+    sea.appendChild(s);
+  });
+}
+
 // ---- 初期化 ----
+makeSea();
 try { $('player-name').value = localStorage.getItem(NAME_KEY) || ''; } catch {}
 renderRanking();
+$('btn-mute').textContent = Sound.muted ? '🔇' : '🔊';
+$('btn-mute').addEventListener('click', () => { $('btn-mute').textContent = Sound.toggle() ? '🔇' : '🔊'; });
+document.querySelectorAll('#btn-zukan, #btn-home, [data-home]').forEach((b) => b.addEventListener('click', () => Sound.tap()));
 $('btn-start').addEventListener('click', startGame);
 $('btn-retry').addEventListener('click', startGame);
 $('btn-home').addEventListener('click', () => { renderRanking(); show('screen-title'); });
