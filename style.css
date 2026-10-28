@@ -241,6 +241,23 @@ h2, h3 { text-align: center; margin: 0 0 10px; }
 .review .mark-ok { background: var(--ok); }
 .review .mark-ng { background: var(--ng); }
 
+/* ---- シェア ---- */
+.share { text-align: center; margin-top: 14px; }
+.share-label { color: #fff; font-weight: 900; margin: 0 0 10px; text-shadow: 0 2px 0 var(--shadow); }
+.share-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.share-btn {
+  display: inline-block; font: inherit; font-weight: 900; font-size: .95rem; padding: 9px 16px;
+  border-radius: 999px; border: none; color: #fff; text-decoration: none; cursor: pointer;
+  box-shadow: 0 4px 0 rgba(0,0,0,.25);
+}
+.share-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,.25); }
+.share-btn.x { background: #000; }
+.share-btn.line { background: #06c755; }
+.share-btn.fb { background: #1877f2; }
+.share-btn.more { background: var(--purple); }
+.share-btn.copy { background: var(--card); color: var(--ink); }
+.share-btn[hidden] { display: none; }
+
 /* ---- 図鑑 ---- */
 .back { font-size: 1rem; padding: 10px 28px; }
 .zukan { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px; }
