@@ -4,7 +4,8 @@ const TOTAL = 20;
 const EASY_COUNT = 8;              // 前半：お馴染み（ニセ漢字から選ぶ）
 const HARD_COUNT = TOTAL - EASY_COUNT; // 後半：難読（漢字を見て読みを選ぶ）
 const RANK_KEY = 'sakanahen-ranking';
-const SITE_URL = 'https://techgymjp.github.io/sakanahen/';
+// シェアボタンで共有するURL（ゲームの紹介記事）
+const SHARE_URL = 'https://techgym.jp/column/claude-code-game-sakanahen/';
 const ALL = [...EASY, ...HARD];
 // 難読問題に出すのは生き物の漢字だけ（生き物以外の字は図鑑のみ）
 const HARD_QUIZ = HARD.filter((e) => e.c !== 'other');
@@ -204,13 +205,8 @@ function finish() {
 }
 
 // ---- シェア ----
-function shareUrl() {
-  // ローカルで開いたときは公開URLをシェアする
-  return location.protocol.startsWith('http') ? location.origin + location.pathname : SITE_URL;
-}
-
 function setupShare(correct, time) {
-  const url = shareUrl();
+  const url = SHARE_URL;
   const text = `さかなへんクイズで ${TOTAL}問中${correct}問正解！ タイム${time.toFixed(1)}秒🐟 #さかなへんクイズ`;
   const enc = encodeURIComponent;
   $('share-x').href = `https://x.com/intent/post?text=${enc(text)}&url=${enc(url)}`;
