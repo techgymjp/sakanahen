@@ -4,7 +4,6 @@ const TOTAL = 20;
 const EASY_COUNT = 8;              // 前半：お馴染み（ニセ漢字から選ぶ）
 const HARD_COUNT = TOTAL - EASY_COUNT; // 後半：難読（漢字を見て読みを選ぶ）
 const RANK_KEY = 'sakanahen-ranking';
-const NAME_KEY = 'sakanahen-name';
 const ALL = [...EASY, ...HARD];
 // 難読問題に出すのは生き物の漢字だけ（生き物以外の字は図鑑のみ）
 const HARD_QUIZ = HARD.filter((e) => e.c !== 'other');
@@ -69,8 +68,8 @@ function renderRanking(highlightId) {
   for (const r of loadRanking()) {
     const li = document.createElement('li');
     if (r.id === highlightId) li.className = 'me';
-    li.innerHTML = `<span class="rn"></span><span class="rs">${r.correct}問 / ${r.time.toFixed(1)}秒</span>`;
-    li.querySelector('.rn').textContent = r.name;
+    const d = new Date(r.date);
+    li.innerHTML = `<span class="rn">${r.correct}問 / ${r.time.toFixed(1)}秒</span><span class="rs">${d.getMonth() + 1}/${d.getDate()}</span>`;
     ol.appendChild(li);
   }
 }
@@ -80,14 +79,13 @@ let game = null;
 let timerId = null;
 
 function startGame() {
-  const name = $('player-name').value.trim() || 'ななしの釣り人';
-  try { localStorage.setItem(NAME_KEY, name); } catch {}
   const qs = [
     ...shuffle(EASY).slice(0, EASY_COUNT).map(makeEasyQuestion),
     ...shuffle(HARD_QUIZ).slice(0, HARD_COUNT).map(makeHardQuestion),
   ];
-  game = { name, qs, index: 0, correct: 0, elapsed: 0, qStart: 0, answers: [] };
+  game = { qs, index: 0, correct: 0, elapsed: 0, qStart: 0, answers: [] };
   Sound.start();
+  Sound.bgmStart();
   show('screen-quiz');
   showQuestion();
 }
@@ -179,7 +177,7 @@ function next() {
 function finish() {
   $('progress-bar').style.width = '100%';
   const time = Math.round(game.elapsed * 10) / 10;
-  const rec = { id: Date.now() + '-' + Math.random(), name: game.name, correct: game.correct, time, date: new Date().toISOString() };
+  const rec = { id: Date.now() + '-' + Math.random(), correct: game.correct, time, date: new Date().toISOString() };
   const list = [...loadRanking(), rec].sort(compareRecord);
   const rank = list.indexOf(rec) + 1;
   saveRanking(list.slice(0, 10));
@@ -187,6 +185,7 @@ function finish() {
   $('r-correct').textContent = game.correct;
   $('r-time').textContent = time.toFixed(1);
   $('r-rank').textContent = rank <= 10 ? `🏆 ランキング ${rank} 位！` : 'ランキング圏外…もう一度挑戦！';
+  Sound.bgmStop();
   Sound.fanfare(game.correct >= TOTAL / 2);
 
   const ol = $('review');
@@ -267,13 +266,17 @@ function makeSea() {
 
 // ---- 初期化 ----
 makeSea();
-try { $('player-name').value = localStorage.getItem(NAME_KEY) || ''; } catch {}
-renderRanking();
 $('btn-mute').textContent = Sound.muted ? '🔇' : '🔊';
 $('btn-mute').addEventListener('click', () => { $('btn-mute').textContent = Sound.toggle() ? '🔇' : '🔊'; });
-document.querySelectorAll('#btn-zukan, #btn-home, [data-home]').forEach((b) => b.addEventListener('click', () => Sound.tap()));
+document.querySelectorAll('#btn-zukan, #btn-home, [data-home], [data-go]').forEach((b) => b.addEventListener('click', () => Sound.tap()));
+document.querySelectorAll('[data-go]').forEach((b) => b.addEventListener('click', () => {
+  if (b.dataset.go === 'screen-rank') renderRanking();
+  show(b.dataset.go);
+}));
+// ブラウザは操作があるまで音を出せないので、最初の操作でBGMを始める
+document.addEventListener('pointerdown', () => Sound.bgmStart(), { once: true });
 $('btn-start').addEventListener('click', startGame);
 $('btn-retry').addEventListener('click', startGame);
-$('btn-home').addEventListener('click', () => { renderRanking(); show('screen-title'); });
+$('btn-home').addEventListener('click', () => { Sound.bgmStart(); show('screen-title'); });
 $('btn-zukan').addEventListener('click', renderZukan);
 document.querySelectorAll('[data-home]').forEach((b) => b.addEventListener('click', () => show('screen-title')));

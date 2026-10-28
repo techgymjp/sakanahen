@@ -11,28 +11,42 @@
 </head>
 <body>
 <div class="sea" id="sea" aria-hidden="true"></div>
-<button id="btn-mute" class="mute" aria-label="効果音のオン・オフ">🔊</button>
+<button id="btn-mute" class="mute" aria-label="音のオン・オフ">🔊</button>
 <main id="app">
 
   <section id="screen-title" class="screen active">
     <h1 class="logo"><span class="logo-k">魚</span>さかなへん<br>クイズ</h1>
-    <p class="lead">全20問・4択！ 正解数とスピードで勝負だ！</p>
+    <p class="lead">全20問・4択</p>
+    <div class="buttons">
+      <button id="btn-start" class="primary pulse big-start">スタート！</button>
+    </div>
+    <div class="menu">
+      <button class="yellow" data-go="screen-howto">❓<span>あそびかた</span></button>
+      <button class="yellow" data-go="screen-rank">🏆<span>ランキング</span></button>
+      <button class="yellow" id="btn-zukan">📖<span>図鑑</span></button>
+    </div>
+  </section>
+
+  <section id="screen-howto" class="screen">
+    <h2 class="page-title">❓ あそびかた</h2>
     <div class="panel">
       <ul class="rules">
-        <li><b>前半 8問</b>（お馴染みの魚）<br>本物の漢字を、そっくりな<b>ニセ漢字</b>の中から見抜け！</li>
-        <li><b>後半 12問</b>（難読の魚）<br>漢字を見て、正しい<b>読み</b>を選べ！</li>
-        <li>順位は <b>正解数</b> → <b>タイム</b> の順で決まるよ</li>
+        <li><b>全20問・4択</b>のクイズです。</li>
+        <li><b>前半 8問</b>（お馴染みの魚）<br>読みに合う本物の漢字を、そっくりな<b>ニセ漢字</b>の中から見抜こう。</li>
+        <li><b>後半 12問</b>（難読の魚）<br>漢字を見て、正しい<b>読み</b>を選ぼう。</li>
+        <li>順位は <b>正解数</b> → <b>タイム</b> の順で決まります。タイムは答えるまでの時間だけを数えます。</li>
+        <li>右上の 🔊 で音のオン・オフができます。</li>
       </ul>
     </div>
-    <label class="name">なまえ <input id="player-name" maxlength="12" placeholder="ななしの釣り人"></label>
-    <div class="buttons">
-      <button id="btn-start" class="primary pulse">スタート！</button>
-      <button id="btn-zukan" class="yellow">📖 漢字図鑑</button>
-    </div>
-    <h2 class="title-h">🏆 ランキング</h2>
+    <div class="buttons"><button class="back" data-home>← もどる</button></div>
+  </section>
+
+  <section id="screen-rank" class="screen">
+    <h2 class="page-title">🏆 ランキング</h2>
     <div class="panel">
       <ol id="ranking" class="ranking"></ol>
     </div>
+    <div class="buttons"><button class="back" data-home>← もどる</button></div>
   </section>
 
   <section id="screen-quiz" class="screen">
@@ -68,8 +82,7 @@
   </section>
 
   <section id="screen-zukan" class="screen">
-    <h2 class="zukan-title">📖 漢字図鑑 <small id="z-count"></small></h2>
-    <button class="back yellow" data-home>← タイトルへ</button>
+    <h2 class="page-title">📖 漢字図鑑 <small id="z-count"></small></h2>
     <div class="panel">
       <h3>🐟 お馴染みの魚</h3>
       <div id="zukan-easy" class="zukan"></div>
@@ -78,6 +91,7 @@
       <h3>🐡 難読の魚へん</h3>
       <div id="zukan-hard" class="zukan"></div>
     </div>
+    <div class="buttons"><button class="back" data-home>← もどる</button></div>
   </section>
 
 </main>
