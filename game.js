@@ -9,12 +9,6 @@ const SHARE_URL = 'https://techgym.jp/column/claude-code-game-sakanahen/';
 const ALL = [...EASY, ...HARD];
 // 難読問題に出すのは生き物の漢字だけ（生き物以外の字は図鑑のみ）
 const HARD_QUIZ = HARD.filter((e) => e.c !== 'other');
-// 読みの選択肢に使う実在の名前（魚の名前／魚以外の水の生き物の名前）
-const NAMES = {};
-for (const e of ALL) {
-  if (e.c === 'other') continue;
-  (NAMES[e.c] ??= new Set()).add(e.y[0]);
-}
 
 const $ = (id) => document.getElementById(id);
 
@@ -33,10 +27,23 @@ function makeEasyQuestion(e) {
   return { level: 'easy', item: e, choices };
 }
 
-// 難読問題：漢字を見せて、正しい読み＋同じ分類の実在の名前3つから選ぶ
+// 名前の片方がもう片方を含む（ぶり／yellowtail と young yellowtail など）と紛らわしいので同時に出さない
+const similar = (a, b) => a.includes(b) || b.includes(a);
+
+// 難読問題：漢字を見せて、正しい読み（英語では意味）＋同じ分類の実在の名前3つから選ぶ
+// 選択肢の名前は魚の名前／魚以外の水の生き物の名前。正解の別名と紛らわしい名前は除く
 function makeHardQuestion(e) {
-  const others = shuffle([...NAMES[e.c]].filter((y) => !e.y.includes(y))).slice(0, 3);
-  const choices = shuffle([e.y[0], ...others]).map((y) => ({ y, correct: y === e.y[0] }));
+  const taken = e.y.map(nameOf);
+  const pool = new Set(ALL.filter((x) => x.c === e.c).map((x) => nameOf(x.y[0])));
+  const others = [];
+  for (const n of shuffle([...pool])) {
+    if (others.length === 3) break;
+    if (taken.some((t) => similar(t, n))) continue;
+    others.push(n);
+    taken.push(n);
+  }
+  const answer = nameOf(e.y[0]);
+  const choices = shuffle([answer, ...others]).map((y) => ({ y, correct: y === answer }));
   return { level: 'hard', item: e, choices };
 }
 
@@ -51,6 +58,8 @@ function renderComposed(tsukuri) {
 // ---- 画面切替 ----
 function show(id) {
   document.querySelectorAll('.screen').forEach((s) => s.classList.toggle('active', s.id === id));
+  // 言語の切り替えはタイトル画面だけ（出題中に切り替わらないように）
+  $('btn-lang').hidden = id !== 'screen-title';
   window.scrollTo(0, 0);
 }
 
@@ -67,11 +76,12 @@ function compareRecord(a, b) {
 function renderRanking(highlightId) {
   const ol = $('ranking');
   ol.innerHTML = '';
+  ol.dataset.empty = T().rankEmpty;
   for (const r of loadRanking()) {
     const li = document.createElement('li');
     if (r.id === highlightId) li.className = 'me';
     const d = new Date(r.date);
-    li.innerHTML = `<span class="rn">${r.correct}問 / ${r.time.toFixed(1)}秒</span><span class="rs">${d.getMonth() + 1}/${d.getDate()}</span>`;
+    li.innerHTML = `<span class="rn">${T().rankRow(r.correct, r.time.toFixed(1))}</span><span class="rs">${d.getMonth() + 1}/${d.getDate()}</span>`;
     ol.appendChild(li);
   }
 }
@@ -106,15 +116,15 @@ function showQuestion() {
   $('q-score').textContent = `⭕ ${game.correct}`;
   $('progress-bar').style.width = (game.index / TOTAL * 100) + '%';
   const badge = $('q-level');
-  badge.textContent = q.level === 'easy' ? 'お馴染み' : '難読';
+  badge.textContent = q.level === 'easy' ? T().easyBadge : T().hardBadge;
   badge.className = 'chip badge' + (q.level === 'hard' ? ' hard' : '');
 
   const qt = $('q-text');
   if (q.level === 'easy') {
-    qt.innerHTML = '「<b></b>」の<em>本物</em>の漢字はどれ？';
-    qt.querySelector('b').textContent = q.item.y[0];
+    qt.innerHTML = T().easyQ;
+    qt.querySelector('b').textContent = nameOf(q.item.y[0]);
   } else {
-    qt.innerHTML = '<span class="q-kanji"></span>この漢字の<em>読み</em>はどれ？';
+    qt.innerHTML = '<span class="q-kanji"></span>' + T().hardQ;
     qt.querySelector('.q-kanji').textContent = q.item.k;
   }
 
@@ -161,11 +171,11 @@ function answer(i) {
   if (ok) burst(buttons[i]);
 
   const fb = $('feedback');
-  const yomi = q.item.y.join('・');
   fb.innerHTML = ok
-    ? `<span class="ok">○ 正解！</span> <span class="k"></span>（${yomi}）`
-    : `<span class="ng">× 残念…</span> 正解は <span class="k"></span>（${yomi}）`;
+    ? `<span class="ok">${T().correct}</span> <span class="k"></span><span class="y"></span>`
+    : `<span class="ng">${T().wrong}</span> ${T().answerIs} <span class="k"></span><span class="y"></span>`;
   fb.querySelector('.k').textContent = q.item.k;
+  fb.querySelector('.y').textContent = lang === 'ja' ? `（${describe(q.item)}）` : ` ${describe(q.item)}`;
 
   setTimeout(next, ok ? 700 : 1500);
 }
@@ -186,7 +196,7 @@ function finish() {
 
   $('r-correct').textContent = game.correct;
   $('r-time').textContent = time.toFixed(1);
-  $('r-rank').textContent = rank <= 10 ? `🏆 ランキング ${rank} 位！` : 'ランキング圏外…もう一度挑戦！';
+  $('r-rank').textContent = rank <= 10 ? T().rankIn(rank) : T().rankOut;
   Sound.bgmStop();
   Sound.fanfare(game.correct >= TOTAL / 2);
 
@@ -196,7 +206,7 @@ function finish() {
     const li = document.createElement('li');
     li.innerHTML = `<span class="${a.ok ? 'mark-ok' : 'mark-ng'}">${a.ok ? '○' : '×'}</span><span class="k"></span><span class="y"></span>`;
     li.querySelector('.k').textContent = a.item.k;
-    li.querySelector('.y').textContent = a.item.y.join('・');
+    li.querySelector('.y').textContent = describe(a.item);
     ol.appendChild(li);
   }
   renderRanking(rec.id);
@@ -207,7 +217,7 @@ function finish() {
 // ---- シェア ----
 function setupShare(correct, time) {
   const url = SHARE_URL;
-  const text = `さかなへんクイズで ${TOTAL}問中${correct}問正解！ タイム${time.toFixed(1)}秒🐟 #さかなへんクイズ`;
+  const text = T().shareText(TOTAL, correct, time.toFixed(1));
   const enc = encodeURIComponent;
   $('share-x').href = `https://x.com/intent/post?text=${enc(text)}&url=${enc(url)}`;
   $('share-line').href = `https://social-plugins.line.me/lineit/share?url=${enc(url)}&text=${enc(text)}`;
@@ -215,15 +225,15 @@ function setupShare(correct, time) {
   // スマホなどOSの共有メニューが使える場合だけ「その他」を出す
   const more = $('share-more');
   more.hidden = !navigator.share;
-  more.onclick = () => navigator.share({ title: 'さかなへんクイズ', text, url }).catch(() => {});
+  more.onclick = () => navigator.share({ title: T().title, text, url }).catch(() => {});
   const copy = $('share-copy');
-  copy.textContent = 'リンクをコピー';
+  copy.textContent = T().copy;
   copy.onclick = async () => {
     try {
       await navigator.clipboard.writeText(`${text}\n${url}`);
-      copy.textContent = 'コピーしました！';
+      copy.textContent = T().copied;
     } catch {
-      copy.textContent = 'コピーできませんでした';
+      copy.textContent = T().copyFailed;
     }
   };
 }
@@ -237,13 +247,13 @@ function renderZukan() {
       const d = document.createElement('div');
       d.innerHTML = '<span class="k"></span><span class="y"></span>';
       d.querySelector('.k').textContent = e.k;
-      d.querySelector('.y').textContent = e.y.join('・');
+      d.querySelector('.y').textContent = describe(e);
       el.appendChild(d);
     }
   };
   fill('zukan-easy', EASY);
   fill('zukan-hard', HARD);
-  $('z-count').textContent = `全${ALL.length}字`;
+  $('z-count').textContent = T().zukanCount(ALL.length);
   show('screen-zukan');
 }
 
@@ -291,11 +301,28 @@ function makeSea() {
   });
 }
 
+// ---- 言語 ----
+// data-t の付いた要素と、あそびかたの説明を今の言語の文言にする
+function applyLang() {
+  const t = T();
+  document.documentElement.lang = lang;
+  document.title = t.title;
+  document.querySelectorAll('[data-t]').forEach((el) => { el.innerHTML = t[el.dataset.t]; });
+  $('rules').innerHTML = t.rules.map((r) => `<li>${r}</li>`).join('');
+  $('btn-lang').textContent = t.langBtn;
+  $('btn-mute').setAttribute('aria-label', t.mute);
+}
+
 // ---- 初期化 ----
 makeSea();
+applyLang();
+$('btn-lang').addEventListener('click', () => {
+  setLang(lang === 'ja' ? 'en' : 'ja');
+  applyLang();
+});
 $('btn-mute').textContent = Sound.muted ? '🔇' : '🔊';
 $('btn-mute').addEventListener('click', () => { $('btn-mute').textContent = Sound.toggle() ? '🔇' : '🔊'; });
-document.querySelectorAll('#btn-zukan, #btn-home, [data-home], [data-go], .share-btn').forEach((b) => b.addEventListener('click', () => Sound.tap()));
+document.querySelectorAll('#btn-zukan, #btn-home, #btn-lang, [data-home], [data-go], .share-btn').forEach((b) => b.addEventListener('click', () => Sound.tap()));
 document.querySelectorAll('[data-go]').forEach((b) => b.addEventListener('click', () => {
   if (b.dataset.go === 'screen-rank') renderRanking();
   show(b.dataset.go);

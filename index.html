@@ -17,42 +17,37 @@
 </head>
 <body>
 <div class="sea" id="sea" aria-hidden="true"></div>
+<button id="btn-lang" class="lang">EN</button>
 <button id="btn-mute" class="mute" aria-label="音のオン・オフ">🔊</button>
 <main id="app">
 
   <section id="screen-title" class="screen active">
-    <h1 class="logo"><span class="logo-k">魚</span>さかなへん<br>クイズ</h1>
-    <p class="lead">全20問・4択</p>
+    <h1 class="logo"><span class="logo-k">魚</span><span data-t="logo">さかなへん<br>クイズ</span></h1>
+    <p class="lead" data-t="lead">全20問・4択</p>
     <div class="buttons">
-      <button id="btn-start" class="primary pulse big-start">スタート！</button>
+      <button id="btn-start" class="primary pulse big-start" data-t="start">スタート！</button>
     </div>
     <div class="menu">
-      <button class="yellow" data-go="screen-howto">❓<span>あそびかた</span></button>
-      <button class="yellow" data-go="screen-rank">🏆<span>ランキング</span></button>
-      <button class="yellow" id="btn-zukan">📖<span>図鑑</span></button>
+      <button class="yellow" data-go="screen-howto">❓<span data-t="howto">あそびかた</span></button>
+      <button class="yellow" data-go="screen-rank">🏆<span data-t="ranking">ランキング</span></button>
+      <button class="yellow" id="btn-zukan">📖<span data-t="zukan">図鑑</span></button>
     </div>
   </section>
 
   <section id="screen-howto" class="screen">
-    <h2 class="page-title">❓ あそびかた</h2>
+    <h2 class="page-title">❓ <span data-t="howto">あそびかた</span></h2>
     <div class="panel">
-      <ul class="rules">
-        <li><b>全20問・4択</b>のクイズです。</li>
-        <li><b>前半 8問</b>（お馴染みの魚）<br>読みに合う本物の漢字を、そっくりな<b>ニセ漢字</b>の中から見抜こう。</li>
-        <li><b>後半 12問</b>（難読の魚）<br>漢字を見て、正しい<b>読み</b>を選ぼう。</li>
-        <li>順位は <b>正解数</b> → <b>タイム</b> の順で決まります。タイムは答えるまでの時間だけを数えます。</li>
-        <li>右上の 🔊 で音のオン・オフができます。</li>
-      </ul>
+      <ul class="rules" id="rules"></ul>
     </div>
-    <div class="buttons"><button class="back" data-home>← もどる</button></div>
+    <div class="buttons"><button class="back" data-home data-t="back">← もどる</button></div>
   </section>
 
   <section id="screen-rank" class="screen">
-    <h2 class="page-title">🏆 ランキング</h2>
+    <h2 class="page-title">🏆 <span data-t="ranking">ランキング</span></h2>
     <div class="panel">
       <ol id="ranking" class="ranking"></ol>
     </div>
-    <div class="buttons"><button class="back" data-home>← もどる</button></div>
+    <div class="buttons"><button class="back" data-home data-t="back">← もどる</button></div>
   </section>
 
   <section id="screen-quiz" class="screen">
@@ -71,47 +66,48 @@
   </section>
 
   <section id="screen-result" class="screen">
-    <h2 class="result-title">🎉 けっか 🎉</h2>
+    <h2 class="result-title" data-t="resultTitle">🎉 けっか 🎉</h2>
     <div class="score-row">
-      <div class="score-box"><div class="lbl">正解数</div><div class="val"><span id="r-correct"></span><small> / 20</small></div></div>
-      <div class="score-box"><div class="lbl">タイム</div><div class="val"><span id="r-time"></span><small> 秒</small></div></div>
+      <div class="score-box"><div class="lbl" data-t="lblCorrect">正解数</div><div class="val"><span id="r-correct"></span><small> / 20</small></div></div>
+      <div class="score-box"><div class="lbl" data-t="lblTime">タイム</div><div class="val"><span id="r-time"></span><small data-t="sec"> 秒</small></div></div>
     </div>
     <p id="r-rank" class="rank-msg"></p>
     <div class="share">
-      <p class="share-label">結果をシェアしよう！</p>
+      <p class="share-label" data-t="shareLabel">結果をシェアしよう！</p>
       <div class="share-buttons">
-        <a id="share-x" class="share-btn x" target="_blank" rel="noopener">𝕏 ポスト</a>
+        <a id="share-x" class="share-btn x" target="_blank" rel="noopener" data-t="shareX">𝕏 ポスト</a>
         <a id="share-line" class="share-btn line" target="_blank" rel="noopener">LINE</a>
         <a id="share-fb" class="share-btn fb" target="_blank" rel="noopener">Facebook</a>
-        <button id="share-more" class="share-btn more" hidden>その他</button>
+        <button id="share-more" class="share-btn more" hidden data-t="shareMore">その他</button>
         <button id="share-copy" class="share-btn copy">リンクをコピー</button>
       </div>
     </div>
     <div class="buttons">
-      <button id="btn-retry" class="primary">もう一度！</button>
-      <button id="btn-home" class="yellow">タイトルへ</button>
+      <button id="btn-retry" class="primary" data-t="retry">もう一度！</button>
+      <button id="btn-home" class="yellow" data-t="home">タイトルへ</button>
     </div>
     <div class="panel">
-      <h3>ふりかえり</h3>
+      <h3 data-t="review">ふりかえり</h3>
       <ol id="review" class="review"></ol>
     </div>
   </section>
 
   <section id="screen-zukan" class="screen">
-    <h2 class="page-title">📖 漢字図鑑 <small id="z-count"></small></h2>
+    <h2 class="page-title">📖 <span data-t="zukanTitle">漢字図鑑</span> <small id="z-count"></small></h2>
     <div class="panel">
-      <h3>🐟 お馴染みの魚</h3>
+      <h3 data-t="zukanEasy">🐟 お馴染みの魚</h3>
       <div id="zukan-easy" class="zukan"></div>
     </div>
     <div class="panel">
-      <h3>🐡 難読の魚へん</h3>
+      <h3 data-t="zukanHard">🐡 難読の魚へん</h3>
       <div id="zukan-hard" class="zukan"></div>
     </div>
-    <div class="buttons"><button class="back" data-home>← もどる</button></div>
+    <div class="buttons"><button class="back" data-home data-t="back">← もどる</button></div>
   </section>
 
 </main>
 <script src="data.js"></script>
+<script src="i18n.js"></script>
 <script src="sound.js"></script>
 <script src="game.js"></script>
 </body>
