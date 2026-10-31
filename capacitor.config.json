@@ -1,0 +1,8 @@
+{
+  "appId": "jp.techgym.sakanahen",
+  "appName": "さかなへん",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#2a7bff"
+  }
+}

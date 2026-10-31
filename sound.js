@@ -5,6 +5,7 @@ const Sound = (() => {
   const MUTE_KEY = 'sakanahen-mute';
   let ctx = null;
   let muted = false;
+  let held = false; // 広告の表示中・アプリが裏に回っている間は音を止めておく
   try { muted = localStorage.getItem(MUTE_KEY) === '1'; } catch {}
 
   function ac() {
@@ -13,7 +14,7 @@ const Sound = (() => {
       if (!AC) return null;
       ctx = new AC();
     }
-    if (ctx.state === 'suspended') ctx.resume();
+    if (ctx.state === 'suspended' && !held) ctx.resume();
     return ctx;
   }
 
@@ -89,6 +90,15 @@ const Sound = (() => {
     bgmStop() {
       clearInterval(bgmTimer);
       bgmTimer = null;
+    },
+    // 広告の表示中やアプリが裏に回ったときに音を止める／戻す（ads.js からも呼ぶ）
+    suspend() {
+      held = true;
+      if (ctx && ctx.state === 'running') ctx.suspend();
+    },
+    resume() {
+      held = false;
+      if (ctx && ctx.state === 'suspended') ctx.resume();
     },
     // ボタンを押した「ポコッ」
     tap() { tone(520, 0, 0.09, { type: 'triangle', vol: 0.25, slideTo: 880 }); },

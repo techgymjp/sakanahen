@@ -12,6 +12,14 @@ const HARD_QUIZ = HARD.filter((e) => e.c !== 'other');
 
 const $ = (id) => document.getElementById(id);
 
+// Android アプリ(Capacitor)で動いているか。Web 版では Capacitor がないので何もしない
+const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+const plugin = (name) => (NATIVE && window.Capacitor.Plugins ? window.Capacitor.Plugins[name] : null);
+// まちがえた問題を広告を見てやり直せる回数（1 ゲームあたり）
+const REDO_MAX = 3;
+const REDO_DELAY = 2000; // 正解の表示を読めるよう、少し待ってから案内を出す
+const REDO_WAIT = 5;     // 案内を出しておく秒数。過ぎたら次の問題へ
+
 function shuffle(a) {
   a = a.slice();
   for (let i = a.length - 1; i > 0; i--) {
@@ -60,6 +68,8 @@ function show(id) {
   document.querySelectorAll('.screen').forEach((s) => s.classList.toggle('active', s.id === id));
   // 言語の切り替えはタイトル画面だけ（出題中に切り替わらないように）
   $('btn-lang').hidden = id !== 'screen-title';
+  // バナー広告は選択肢と重ならない画面だけ（タイトル・あそびかた・ポーズ・結果）
+  Ads.setBanner(['screen-title', 'screen-howto', 'screen-pause', 'screen-result'].includes(id));
   window.scrollTo(0, 0);
 }
 
@@ -95,7 +105,7 @@ function startGame() {
     ...shuffle(EASY).slice(0, EASY_COUNT).map(makeEasyQuestion),
     ...shuffle(HARD_QUIZ).slice(0, HARD_COUNT).map(makeHardQuestion),
   ];
-  game = { qs, index: 0, correct: 0, elapsed: 0, qStart: 0, answers: [] };
+  game = { qs, index: 0, correct: 0, elapsed: 0, qStart: 0, qBase: 0, answers: [], redoUsed: 0, phase: 'question' };
   Sound.start();
   Sound.bgmStart();
   show('screen-quiz');
@@ -141,6 +151,8 @@ function showQuestion() {
   $('feedback').innerHTML = '';
   Sound.bubble();
 
+  game.phase = 'question';
+  game.qBase = game.elapsed; // やり直すときはこの問題にかけた時間も取り消す
   game.qStart = performance.now();
   clearInterval(timerId);
   timerId = setInterval(tick, 100);
@@ -148,6 +160,8 @@ function showQuestion() {
 }
 
 function answer(i) {
+  if (game.phase !== 'question') return;
+  game.phase = 'feedback';
   const q = game.qs[game.index];
   // タイムは回答までの時間だけを計測（正誤表示中は止める）
   game.elapsed = currentTime();
@@ -177,7 +191,9 @@ function answer(i) {
   fb.querySelector('.k').textContent = q.item.k;
   fb.querySelector('.y').textContent = lang === 'ja' ? `（${describe(q.item)}）` : ` ${describe(q.item)}`;
 
-  setTimeout(next, ok ? 700 : 1500);
+  if (ok) setTimeout(next, 700);
+  else if (canRedo()) setTimeout(offerRedo, REDO_DELAY);
+  else setTimeout(next, 1500);
 }
 
 function next() {
@@ -187,6 +203,7 @@ function next() {
 }
 
 function finish() {
+  game.phase = 'done';
   $('progress-bar').style.width = '100%';
   const time = Math.round(game.elapsed * 10) / 10;
   const rec = { id: Date.now() + '-' + Math.random(), correct: game.correct, time, date: new Date().toISOString() };
@@ -197,6 +214,8 @@ function finish() {
   $('r-correct').textContent = game.correct;
   $('r-time').textContent = time.toFixed(1);
   $('r-rank').textContent = rank <= 10 ? T().rankIn(rank) : T().rankOut;
+  $('r-redo').hidden = !game.redoUsed;
+  $('r-redo').textContent = T().redoUsed(game.redoUsed);
   Sound.bgmStop();
   Sound.fanfare(game.correct >= TOTAL / 2);
 
@@ -210,14 +229,14 @@ function finish() {
     ol.appendChild(li);
   }
   renderRanking(rec.id);
-  setupShare(game.correct, time);
+  setupShare(game.correct, time, game.redoUsed);
   show('screen-result');
 }
 
 // ---- シェア ----
-function setupShare(correct, time) {
+function setupShare(correct, time, redoUsed) {
   const url = SHARE_URL;
-  const text = T().shareText(TOTAL, correct, time.toFixed(1));
+  const text = T().shareText(TOTAL, correct, time.toFixed(1), redoUsed);
   const enc = encodeURIComponent;
   $('share-x').href = `https://x.com/intent/post?text=${enc(text)}&url=${enc(url)}`;
   $('share-line').href = `https://social-plugins.line.me/lineit/share?url=${enc(url)}&text=${enc(text)}`;
@@ -226,6 +245,14 @@ function setupShare(correct, time) {
   const more = $('share-more');
   more.hidden = !navigator.share;
   more.onclick = () => navigator.share({ title: T().title, text, url }).catch(() => {});
+  // アプリでは Android の共有メニューだけを出す
+  const nativeShare = plugin('Share');
+  if (nativeShare) {
+    for (const id of ['share-x', 'share-line', 'share-fb', 'share-copy']) $(id).hidden = true;
+    more.hidden = false;
+    more.textContent = T().shareApp;
+    more.onclick = () => nativeShare.share({ title: T().title, text, url, dialogTitle: T().shareApp }).catch(() => {});
+  }
   const copy = $('share-copy');
   copy.textContent = T().copy;
   copy.onclick = async () => {
@@ -301,10 +328,117 @@ function makeSea() {
   });
 }
 
+// ---- 一時停止 ----
+// 出題中だけ止められる。止めている間はタイムを数えず、問題も隠す
+function pauseGame() {
+  if (!game || game.phase !== 'question') return;
+  game.elapsed = currentTime();
+  game.qStart = 0;
+  clearInterval(timerId);
+  game.phase = 'paused';
+  show('screen-pause');
+}
+
+function resumeGame() {
+  if (!game || game.phase !== 'paused') return;
+  withInterstitial(() => {
+    show('screen-quiz');
+    game.phase = 'question';
+    game.qStart = performance.now();
+    timerId = setInterval(tick, 100);
+    tick();
+  });
+}
+
+// ---- 全画面広告(アプリのみ) ----
+let adBusy = false;
+async function withInterstitial(then) {
+  if (adBusy) return;
+  if (Ads.available) {
+    adBusy = true;
+    await Ads.showInterstitial(3000);
+    adBusy = false;
+  }
+  then();
+}
+
+function goTitle() {
+  withInterstitial(() => {
+    if (game && game.phase !== 'done') { clearInterval(timerId); game.phase = 'done'; }
+    renderBest();
+    Sound.bgmStart();
+    show('screen-title');
+  });
+}
+
+// ---- リワード広告のチート: まちがえた問題をやり直す(アプリのみ・1 ゲーム REDO_MAX 回まで) ----
+// まちがえたら正解を見せたあとで「広告を見てこの問題をやり直す」を出す。最後まで見たら、その問題の結果と
+// かかった時間を取り消して、同じ問題（同じ選択肢・同じ並び）をもう一度出す
+const redo = { timer: null, left: 0, busy: false };
+
+function canRedo() {
+  return Ads.canReward && game.redoUsed < REDO_MAX;
+}
+
+function offerRedo() {
+  if (game.phase !== 'feedback') return;
+  game.phase = 'redo';
+  Object.assign(redo, { left: REDO_WAIT, busy: false });
+  $('redo-watch').disabled = false;
+  $('redo-watch').textContent = T().redoWatch;
+  $('redo-note').textContent = T().redoNote(REDO_MAX - game.redoUsed, REDO_MAX);
+  $('redo-next').textContent = T().redoNext(redo.left);
+  $('redo').hidden = false;
+  redo.timer = setInterval(() => {
+    if (redo.busy) return;
+    redo.left--;
+    $('redo-next').textContent = T().redoNext(Math.max(0, redo.left));
+    if (redo.left <= 0 && closeRedo()) next();
+  }, 1000);
+}
+
+// 案内を閉じる。案内が出ていなければ false
+function closeRedo() {
+  if (game.phase !== 'redo') return false;
+  clearInterval(redo.timer);
+  $('redo').hidden = true;
+  game.phase = 'feedback';
+  return true;
+}
+
+async function watchRedo() {
+  if (game.phase !== 'redo' || redo.busy) return;
+  redo.busy = true;
+  $('redo-watch').disabled = true;
+  $('redo-watch').textContent = T().redoLoading;
+  const result = await Ads.showRewarded();
+  if (result === 'unavailable') {
+    $('redo-note').textContent = T().redoFail;
+    setTimeout(() => { if (closeRedo()) next(); }, 1500);
+    return;
+  }
+  closeRedo();
+  if (result !== 'rewarded') { next(); return; }
+  // まちがえた結果とかかった時間を取り消して、同じ問題をもう一度
+  game.answers.pop();
+  game.elapsed = game.qBase;
+  game.redoUsed++;
+  showQuestion();
+}
+
+// タイトル画面のベスト記録
+function renderBest() {
+  const top = loadRanking()[0];
+  $('best').hidden = !top;
+  if (top) $('best').textContent = T().best(top.correct, top.time.toFixed(1));
+}
+
 // ---- 言語 ----
 // data-t の付いた要素と、あそびかたの説明を今の言語の文言にする
 function applyLang() {
   const t = T();
+  renderBest();
+  $('privacyLink').href = t.privacyUrl;
   document.documentElement.lang = lang;
   document.title = t.title;
   document.querySelectorAll('[data-t]').forEach((el) => { el.innerHTML = t[el.dataset.t]; });
@@ -322,15 +456,56 @@ $('btn-lang').addEventListener('click', () => {
 });
 $('btn-mute').textContent = Sound.muted ? '🔇' : '🔊';
 $('btn-mute').addEventListener('click', () => { $('btn-mute').textContent = Sound.toggle() ? '🔇' : '🔊'; });
-document.querySelectorAll('#btn-zukan, #btn-home, #btn-lang, [data-home], [data-go], .share-btn').forEach((b) => b.addEventListener('click', () => Sound.tap()));
+document.querySelectorAll('#btn-zukan, #btn-home, #btn-lang, #btn-howto-back, #btn-pause, #btn-pause-home, #btn-resume, #redo-next, [data-home], [data-go], .share-btn').forEach((b) => b.addEventListener('click', () => Sound.tap()));
 document.querySelectorAll('[data-go]').forEach((b) => b.addEventListener('click', () => {
   if (b.dataset.go === 'screen-rank') renderRanking();
   show(b.dataset.go);
 }));
 // ブラウザは操作があるまで音を出せないので、最初の操作でBGMを始める
 document.addEventListener('pointerdown', () => Sound.bgmStart(), { once: true });
-$('btn-start').addEventListener('click', startGame);
-$('btn-retry').addEventListener('click', startGame);
-$('btn-home').addEventListener('click', () => { Sound.bgmStart(); show('screen-title'); });
+// 「スタート」「もう一度」「タイトルへ」「再開」のたびに全画面広告（アプリのみ）
+$('btn-start').addEventListener('click', () => withInterstitial(startGame));
+$('btn-start2').addEventListener('click', () => withInterstitial(startGame));
+$('btn-retry').addEventListener('click', () => withInterstitial(startGame));
+$('btn-home').addEventListener('click', goTitle);
+$('btn-howto-back').addEventListener('click', goTitle);
+$('btn-pause-home').addEventListener('click', goTitle);
+$('btn-pause').addEventListener('click', pauseGame);
+$('btn-resume').addEventListener('click', resumeGame);
+$('redo-watch').addEventListener('click', watchRedo);
+$('redo-next').addEventListener('click', () => { if (closeRedo()) next(); });
 $('btn-zukan').addEventListener('click', renderZukan);
 document.querySelectorAll('[data-home]').forEach((b) => b.addEventListener('click', () => show('screen-title')));
+
+// 裏に回ったら一時停止して音を止める(広告の表示中は広告側が音を止めている)
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    pauseGame();
+    Sound.suspend();
+  } else if (!Ads.showing) {
+    Sound.resume();
+  }
+});
+
+// Android の戻るボタン: 出題中は一時停止(一時停止中なら再開)、タイトル・結果画面ではアプリを閉じる
+if (plugin('App')) {
+  plugin('App').addListener('backButton', () => {
+    if (adBusy) return;
+    const screen = document.querySelector('.screen.active').id;
+    if (screen === 'screen-title' || screen === 'screen-result') plugin('App').exitApp();
+    else if (screen === 'screen-howto') goTitle();
+    else if (screen === 'screen-pause') resumeGame();
+    else if (screen === 'screen-quiz') pauseGame();
+    else show('screen-title');
+  });
+}
+
+// タイトル画面の下に、バージョン(アプリ版)・プライバシーポリシー・広告の設定(EU など)を出す
+if (NATIVE) {
+  document.body.classList.add('native');
+  $('legal').hidden = false;
+  if (window.APP_VERSION && window.APP_VERSION !== 'dev') $('buildInfo').textContent = window.APP_VERSION;
+  Ads.initDone.then(() => { if (Ads.privacyOptionsRequired) $('adPrivacy').hidden = false; });
+  $('adPrivacyLink').addEventListener('click', (e) => { e.preventDefault(); Ads.showPrivacyOptions(); });
+}
+show('screen-title');
