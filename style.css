@@ -246,6 +246,21 @@ h2, h3 { text-align: center; margin: 0 0 10px; }
 .review .mark-ok { background: var(--ok); }
 .review .mark-ng { background: var(--ng); }
 
+/* ---- 一時停止・やり直し ---- */
+.pause-btn { border: none; font: inherit; font-weight: 900; padding: 6px 12px; cursor: pointer; letter-spacing: -.15em; }
+.redo { text-align: center; margin-top: 8px; }
+.redo .primary { font-size: 1.05rem; padding: 12px 22px; }
+.redo-note { color: #fff; font-weight: 700; margin: 10px 0; text-shadow: 0 2px 0 rgba(0,0,0,.2); }
+.redo-count { text-align: center; color: #fff; font-weight: 700; margin: 6px 0 0; }
+.redo[hidden], .best[hidden], .legal[hidden], .redo-count[hidden] { display: none; }
+
+/* ---- タイトルの補足（ベスト記録・アプリ版の表示） ---- */
+.best { text-align: center; color: #fff; font-weight: 900; font-size: 1.1rem; margin: 6px 0 0; text-shadow: 0 2px 0 var(--shadow); }
+.legal { text-align: center; color: #fff; font-size: .8rem; margin-top: 28px; opacity: .9; }
+.legal a { color: #fff; }
+/* アプリ版は画面の下にバナー広告が出るので、その分だけ下を空ける */
+.native #app { padding-bottom: 72px; }
+
 /* ---- シェア ---- */
 .share { text-align: center; margin-top: 14px; }
 .share-label { color: #fff; font-weight: 900; margin: 0 0 10px; text-shadow: 0 2px 0 var(--shadow); }

@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">さかなへん</string>
+    <string name="title_activity_main">さかなへん</string>
+    <string name="package_name">jp.techgym.sakanahen</string>
+    <string name="custom_url_scheme">jp.techgym.sakanahen</string>
+    <!-- AdMob のアプリ ID。AdMob で「さかなへんクイズ」を登録したら、そのアプリ ID に差し替える（今は Google 公式のテスト用） -->
+    <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>
+</resources>

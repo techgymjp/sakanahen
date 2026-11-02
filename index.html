@@ -27,11 +27,18 @@
     <div class="buttons">
       <button id="btn-start" class="primary pulse big-start" data-t="start">スタート！</button>
     </div>
+    <p class="best" id="best" hidden></p>
     <div class="menu">
       <button class="yellow" data-go="screen-howto">❓<span data-t="howto">あそびかた</span></button>
       <button class="yellow" data-go="screen-rank">🏆<span data-t="ranking">ランキング</span></button>
       <button class="yellow" id="btn-zukan">📖<span data-t="zukan">図鑑</span></button>
     </div>
+    <!-- アプリ版だけ: バージョン・プライバシーポリシー・広告の設定（EU など） -->
+    <p class="legal" id="legal" hidden>
+      <span id="buildInfo"></span>
+      <a id="privacyLink" href="https://techgym.jp/privacy-policy/" target="_blank" rel="noopener" data-t="privacy">プライバシーポリシー</a>
+      <span id="adPrivacy" hidden>| <a href="#" id="adPrivacyLink" data-t="adSettings">広告の設定</a></span>
+    </p>
   </section>
 
   <section id="screen-howto" class="screen">
@@ -39,7 +46,10 @@
     <div class="panel">
       <ul class="rules" id="rules"></ul>
     </div>
-    <div class="buttons"><button class="back" data-home data-t="back">← もどる</button></div>
+    <div class="buttons">
+      <button id="btn-start2" class="primary" data-t="start">スタート！</button>
+      <button id="btn-howto-back" class="back" data-t="back">← もどる</button>
+    </div>
   </section>
 
   <section id="screen-rank" class="screen">
@@ -56,6 +66,7 @@
       <span id="q-level" class="chip badge"></span>
       <span id="q-score" class="chip">⭕ 0</span>
       <span id="q-time" class="chip">⏱ 0.0</span>
+      <button id="btn-pause" class="chip pause-btn" aria-label="一時停止">❚❚</button>
     </header>
     <div class="progress"><div id="progress-bar"></div></div>
     <div class="panel">
@@ -63,6 +74,20 @@
     </div>
     <div id="choices" class="choices"></div>
     <div id="feedback" class="feedback"></div>
+    <!-- アプリ版だけ: まちがえた問題を広告を見てやり直す -->
+    <div id="redo" class="redo" hidden>
+      <button id="redo-watch" class="primary"></button>
+      <p id="redo-note" class="redo-note"></p>
+      <button id="redo-next" class="back"></button>
+    </div>
+  </section>
+
+  <section id="screen-pause" class="screen">
+    <h2 class="page-title" data-t="pauseTitle">⏸ 一時停止中</h2>
+    <div class="buttons">
+      <button id="btn-resume" class="primary" data-t="resume">再開</button>
+      <button id="btn-pause-home" class="yellow" data-t="home">タイトルへ</button>
+    </div>
   </section>
 
   <section id="screen-result" class="screen">
@@ -72,6 +97,7 @@
       <div class="score-box"><div class="lbl" data-t="lblTime">タイム</div><div class="val"><span id="r-time"></span><small data-t="sec"> 秒</small></div></div>
     </div>
     <p id="r-rank" class="rank-msg"></p>
+    <p id="r-redo" class="redo-count" hidden></p>
     <div class="share">
       <p class="share-label" data-t="shareLabel">結果をシェアしよう！</p>
       <div class="share-buttons">
@@ -109,6 +135,9 @@
 <script src="data.js"></script>
 <script src="i18n.js"></script>
 <script src="sound.js"></script>
+<script src="ads-config.js"></script>
+<script src="build-info.js"></script>
+<script src="ads.js"></script>
 <script src="game.js"></script>
 </body>
 </html>
