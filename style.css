@@ -160,6 +160,15 @@ h2, h3 { text-align: center; margin: 0 0 10px; }
 /* ---- クイズ ---- */
 .hud { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding-right: 56px; font-weight: 900; font-variant-numeric: tabular-nums; }
 .chip { background: var(--card); color: var(--ink); border-radius: 999px; padding: 6px 14px; box-shadow: 0 3px 0 var(--shadow); white-space: nowrap; }
+/* 幅の狭いスマホでは、右上の 🔊 ボタンと重ならないよう詰める */
+@media (max-width: 420px) {
+  .hud { gap: 4px; font-size: .85rem; }
+  .chip { padding: 5px 9px; }
+}
+@media (max-width: 340px) {
+  .hud { gap: 3px; font-size: .75rem; }
+  .chip { padding: 4px 7px; }
+}
 .badge { background: var(--mint); color: #0a4a38; }
 .badge.hard { background: var(--purple); color: #fff; }
 .progress { height: 14px; background: rgba(255,255,255,.35); border-radius: 999px; margin: 14px 0 6px; overflow: hidden; border: 3px solid #fff; }
