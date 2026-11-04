@@ -91,15 +91,11 @@ npm run ios:open
 
 ---
 
-## 4. TestFlight で確認し、審査用の録画を撮る
+## 4. TestFlight で確認する
 
 1. App Store Connect の「TestFlight」→「内部テスト」でグループを作り、自分を追加する
 2. iPhone に「TestFlight」アプリを App Store から入れ、届いた招待からさかなへんクイズをインストールする
-3. **審査用の画面録画を撮る**（新しいアカウントは、最初の審査で実機での操作の録画を求められます。先に用意しておくと早い）
-   - iPhone の「設定」→「コントロールセンター」に「画面収録」を追加し、コントロールセンターから録画を始める
-   - **アプリの起動から**撮る：起動 → トラッキングの確認 → タイトル → あそびかた → スタート → 数問答える（1 問わざとまちがえる）→ ❚❚ で一時停止 → 再開 → 最後まで答えて結果画面 → シェア
-   - 本番広告が出ても**タップしない**。広告が閉じるまで待つ
-   - 2〜3 分に収める。大きすぎて送れないときは、Mac の Finder で右クリック →「選択したビデオファイルをエンコード」→ 720p で小さくするか、Google ドライブの共有リンクを使う
+3. 2 章の「確認すること」と同じ点を見る。本番の広告が出ても**タップしない**（広告が閉じるまで待つ）
 
 ---
 
@@ -131,18 +127,23 @@ Google の「Apple の App Store のデータ開示要件への準備」（AdMob
 - トラッキングに使用：デバイス ID と広告データは「する」
 - アプリ自体は個人情報を集めない（ランキング・言語・音の設定は端末の中だけに保存）
 
-**審査へのメモ（App Review に関する情報の「メモ」に貼る。初回に「Guideline 2.1 - Information Needed」が来たら、同じ文を返信し、4 章で撮った録画を添付する）**
+**審査へのメモ（App Review に関する情報の「メモ」に貼る。初回に「Guideline 2.1 - Information Needed」が来たら、同じ文を返信する（実機の画面録画の添付は不要）。6 は「4.3 デザインスパム」（似たアプリの量産）と判断されないための説明）**
 
 ```
-1. Purpose and audience: Sakanahen Kanji Quiz is a free trivia quiz game for ages 13+. Players answer 20 multiple-choice questions about Japanese kanji that use the fish radical (魚): first spot the real kanji among look-alike fakes, then choose the meaning or reading of hard fish kanji.
+1. Purpose and audience: Sakanahen Kanji Quiz is a free trivia and educational quiz game for ages 13+. Players answer 20 multiple-choice questions about Japanese kanji that use the fish radical (魚, "sakana-hen"): first spot the real kanji among look-alike fakes, then choose the meaning (or, in Japanese mode, the reading) of hard fish kanji. Players compete on the number of correct answers and the time taken.
 
-2. How to use: No login or account is needed. Tap "EN" at the top left to switch the game to English, then tap "Start!" and tap one of the four answers for each question. The pause button (❚❚) pauses the quiz.
+2. How to use: No login or account is needed. The game follows the device language (Japanese or English); "EN" / "日本語" at the top left of the title screen switches it. Tap "Start!" and tap one of the four answers for each question. The pause button (❚❚) pauses the quiz. "How to play", "Ranking" and "Kanji list" are on the title screen.
 
-3. External services: Google AdMob (banner, interstitial and rewarded ads) with Google's consent form (UMP) and App Tracking Transparency. Rewarded ads are optional: after a wrong answer, watching one lets the player retry that question (up to 3 times per game). No other services or in-app purchases.
+3. External services: Google AdMob (banner, interstitial and rewarded ads) with Google's consent form (UMP) and App Tracking Transparency. Rewarded ads are optional: after a wrong answer, watching one lets the player retry that question (up to 3 times per game). No other services or in-app purchases. The game works offline except for ads and sharing.
 
 4. Regional differences: None, except that the ad consent form appears only where required (e.g. EEA/UK).
 
 5. Regulated content / third-party material: The game is not in a regulated industry. All graphics, sounds and quiz content are original; the kanji and their readings are general knowledge. Fonts are loaded from Google Fonts under the SIL Open Font License.
+
+6. Originality (Guideline 4.3): This app was designed and written specifically for this game. It is not made from a template, an app builder or a reskin of another app.
+- Original content: a curated set of 177 kanji with the fish radical, each with its Japanese readings and an English name, all browsable in the in-app Kanji list.
+- Original gameplay: in the "spot the fake" questions, the wrong answers are look-alike kanji that do not exist. The app builds them from the fish radical and a similar-looking component, and each one was checked against a kanji component database to make sure it is not a real character. The hard questions use only real fish and sea-creature names as choices, so they test real knowledge.
+- Other apps from this developer are completely different games (for example a 3D jet fighter action game and a 3D highway racing game). They share only common technology (Capacitor and the AdMob SDK), not gameplay, graphics or content. This is the developer's only kanji quiz app, and no duplicate or near-duplicate version has been submitted.
 ```
 
 入力が終わったら「審査用に追加」→「審査へ提出」。
