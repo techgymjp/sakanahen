@@ -62,6 +62,14 @@ body {
 }
 
 #app { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; padding: 16px; }
+/* iPhone のカメラの切り欠き（Dynamic Island）やホームバーに重ならないよう、安全な範囲に収める */
+/* 右上・左上のボタンも同じだけずらすので、上の余白とボタンの位置関係は Web 版と変わらない */
+#app {
+  padding-top: calc(16px + env(safe-area-inset-top));
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  padding-left: calc(16px + env(safe-area-inset-left));
+  padding-right: calc(16px + env(safe-area-inset-right));
+}
 .screen { display: none; }
 .screen.active { display: block; animation: pop-in .35s cubic-bezier(.2, 1.6, .4, 1); }
 @keyframes pop-in {
@@ -128,11 +136,11 @@ button:disabled { cursor: default; }
 @keyframes pulse { 50% { transform: scale(1.07); } }
 
 .mute {
-  position: fixed; top: 12px; right: 12px; z-index: 5;
+  position: fixed; top: calc(12px + env(safe-area-inset-top)); right: calc(12px + env(safe-area-inset-right)); z-index: 5;
   width: 48px; height: 48px; padding: 0; font-size: 1.4rem; border-radius: 50%;
 }
 .lang {
-  position: fixed; top: 12px; left: 12px; z-index: 5;
+  position: fixed; top: calc(12px + env(safe-area-inset-top)); left: calc(12px + env(safe-area-inset-left)); z-index: 5;
   height: 48px; padding: 0 16px; font-size: 1rem;
 }
 .lang[hidden] { display: none; }
@@ -268,7 +276,7 @@ h2, h3 { text-align: center; margin: 0 0 10px; }
 .legal { text-align: center; color: #fff; font-size: .8rem; margin-top: 28px; opacity: .9; }
 .legal a { color: #fff; }
 /* アプリ版は画面の下にバナー広告が出るので、その分だけ下を空ける */
-.native #app { padding-bottom: 72px; }
+.native #app { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
 
 /* ---- シェア ---- */
 .share { text-align: center; margin-top: 14px; }

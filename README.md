@@ -12,7 +12,7 @@
 
 ## 遊び方
 
-`index.html` をブラウザで開くだけです（Web 版はビルド不要）。Android アプリ版もあります（下記）。
+`index.html` をブラウザで開くだけです（Web 版はビルド不要）。Android アプリ版と iOS アプリ版もあります（下記）。
 
 ## Android アプリ
 
@@ -47,6 +47,19 @@ AdMob のアプリ ID は `android/app/src/main/res/values/strings.xml` の `adm
 
 手元で試すとき: `npm install` → `npm run android:sync` → `npm run android:open`（Android Studio が必要）。
 アイコンと起動画面は `assets/` の元画像から `npx @capacitor/assets generate --android` で生成しています。
+
+## iOS アプリ
+
+Android 版と同じ Capacitor のプロジェクトに `ios/` を足して作っています。構成は techgymjp/jet-fighter（JET STRIKE）の `docs/ANDROID_PORTING.md` の 7 章、techgymjp/shutoko と同じです。
+
+- Bundle ID: `jp.techgym.sakanahen`（Android と同じ）、iPhone 専用・縦画面固定・全画面・プレイ中は画面を消さない
+- アプリ名はホーム画面で「さかなへん」（英語の端末では Sakanahen）
+- 画面の上下は iPhone のカメラの切り欠き（Dynamic Island）とホームバーをよけて表示する
+- 広告は Android と同じルール。起動時に App Tracking Transparency の確認を出す
+- AdMob の iOS 用の ID は `ios/App/App/Info.plist`（`GADApplicationIdentifier`）と `ads.js` の `UNITS.ios.production`（広告ユニット）
+- GitHub Actions: `.github/workflows/ios.yml` で push のたびに Xcode でビルドできるかを確認（署名なし）、`.github/workflows/ios-release.yml` で本番広告の設定でビルドして TestFlight にアップロード（ビルド番号は実行回数 + 100。iOS の Secrets を登録するまでは何もしない）
+- ビルドと App Store への提出は Mac の Xcode で行う。手順は `docs/IOS_BUILD.md`
+- App Store 用の掲載文と画像は `docs/store/ios/`（スクリーンショット 1206×2622 縦向き 日英各 4 枚、ヘッダ 3840×1646、検索結果 3840×2560）
 
 ## データ
 
