@@ -91,15 +91,11 @@ npm run ios:open
 
 ---
 
-## 4. TestFlight で確認し、審査用の録画を撮る
+## 4. TestFlight で確認する
 
 1. App Store Connect の「TestFlight」→「内部テスト」でグループを作り、自分を追加する
 2. iPhone に「TestFlight」アプリを App Store から入れ、届いた招待からさかなへんクイズをインストールする
-3. **審査用の画面録画を撮る**（新しいアカウントは、最初の審査で実機での操作の録画を求められます。先に用意しておくと早い）
-   - iPhone の「設定」→「コントロールセンター」に「画面収録」を追加し、コントロールセンターから録画を始める
-   - **アプリの起動から**撮る：起動 → トラッキングの確認 → タイトル → あそびかた → スタート → 数問答える（1 問わざとまちがえる）→ ❚❚ で一時停止 → 再開 → 最後まで答えて結果画面 → シェア
-   - 本番広告が出ても**タップしない**。広告が閉じるまで待つ
-   - 2〜3 分に収める。大きすぎて送れないときは、Mac の Finder で右クリック →「選択したビデオファイルをエンコード」→ 720p で小さくするか、Google ドライブの共有リンクを使う
+3. 2 章の「確認すること」と同じ点を見る。本番の広告が出ても**タップしない**（広告が閉じるまで待つ）
 
 ---
 
@@ -131,7 +127,7 @@ Google の「Apple の App Store のデータ開示要件への準備」（AdMob
 - トラッキングに使用：デバイス ID と広告データは「する」
 - アプリ自体は個人情報を集めない（ランキング・言語・音の設定は端末の中だけに保存）
 
-**審査へのメモ（App Review に関する情報の「メモ」に貼る。初回に「Guideline 2.1 - Information Needed」が来たら、同じ文を返信し、4 章で撮った録画を添付する。6 は「4.3 デザインスパム」（似たアプリの量産）と判断されないための説明）**
+**審査へのメモ（App Review に関する情報の「メモ」に貼る。初回に「Guideline 2.1 - Information Needed」が来たら、同じ文を返信する（実機の画面録画の添付は不要）。6 は「4.3 デザインスパム」（似たアプリの量産）と判断されないための説明）**
 
 ```
 1. Purpose and audience: Sakanahen Kanji Quiz is a free trivia and educational quiz game for ages 13+. Players answer 20 multiple-choice questions about Japanese kanji that use the fish radical (魚, "sakana-hen"): first spot the real kanji among look-alike fakes, then choose the meaning (or, in Japanese mode, the reading) of hard fish kanji. Players compete on the number of correct answers and the time taken.
