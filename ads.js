@@ -23,10 +23,10 @@ window.Ads = (() => {
         rewarded: 'ca-app-pub-3940256099942544/1712485313',
         banner: 'ca-app-pub-3940256099942544/2934735716',
       },
-      // 本番の広告ユニット(AdMob の iOS アプリ「さかなへんクイズ」)。空の種類はまだ届いていない
+      // 本番の広告ユニット(AdMob の iOS アプリ「さかなへんクイズ」)
       production: {
         interstitial: 'ca-app-pub-6411535997477460/4653104913',
-        rewarded: '',
+        rewarded: 'ca-app-pub-6411535997477460/8421171560',
         banner: 'ca-app-pub-6411535997477460/3918607744',
       },
     },
