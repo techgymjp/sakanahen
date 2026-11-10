@@ -7,7 +7,7 @@
 - 順位は「正解数 → タイム」で決定（ランキングはブラウザ内に保存）
 - BGM・効果音つき（右上の 🔊 でオン・オフ）
 - 遊び方・ランキング・漢字図鑑はタイトル画面のボタンから開く別ページ
-- Web 版のタイトル画面とあそびかた画面に、Android アプリ（Google Play）へのテキストリンク（新しいタブで開く。アプリの中では出さない）
+- Web 版のタイトル画面とあそびかた画面に、Android アプリ（Google Play）へのテキストリンク（新しいタブで開く）。アプリ用のビルド（`npm run build:app`）では、`web-only` の目印で囲んだこの部分を取り除く（下記）
 - 日本語／英語に対応（タイトル画面左上のボタンで切り替え。初回はブラウザの言語に合わせる）。英語では難読問題の選択肢が英語の魚名になる
 - 収録 177 字（お馴染み 40 字＋難読 137 字）。タイトル画面の「漢字図鑑」で一覧できます
 
@@ -35,7 +35,9 @@
 
 ビルドは GitHub Actions（`.github/workflows/android.yml`）で行います。
 
-1. `npm ci` → `npm run build`（`www/` に Web ファイルをコピーし、`ads-config.js` と `build-info.js` を生成）→ `npx cap sync android` → `./gradlew assembleDebug`
+1. `npm ci` → `npm run build:app`（`www/` に Web ファイルをコピーし、`ads-config.js` と `build-info.js` を生成）→ `npx cap sync android` → `./gradlew assembleDebug`
+   - `build:app` は、Web 版だけの部分（Google Play へのリンク。HTML は `<!-- web-only -->`〜`<!-- /web-only -->`、JS は `// web-only:start`〜`// web-only:end`、CSS は `/* web-only:start */`〜`/* web-only:end */` で囲む）を取り除き、`play.google.com` などが残っていたらビルドを止める。iOS の審査で「審査中に隠した機能」（Guideline 5.6）と見なされないようにするため（techgymjp/chabudai と同じ方法）
+   - Web 版（GitHub Pages）はリポジトリのファイルをそのまま公開し、Vercel では `npm run build`（取り除かない）を使う
 2. 既定ブランチなら、Release `android-latest` の `sakanahen.apk` を差し替え（動作確認用・テスト広告）
    - リリース画面: https://github.com/techgymjp/sakanahen/releases/tag/android-latest （QR コード: `docs/apk-qr.png`）
    - APK 直接: https://github.com/techgymjp/sakanahen/releases/latest/download/sakanahen.apk
