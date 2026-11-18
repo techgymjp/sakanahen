@@ -112,8 +112,10 @@ const TEXT = {
     privacy: 'プライバシーポリシー',
     privacyUrl: 'https://techgym.jp/privacy-policy/',
     adSettings: '広告の設定',
+    // web-only:start
     storeLink: '📱 Android アプリ（Google Play）',
     storeNote: 'Google Play および Google Play ロゴは Google LLC の商標です。',
+    // web-only:end
     pauseTitle: '⏸ 一時停止中',
     resume: '再開',
     pause: '一時停止',
@@ -176,8 +178,10 @@ const TEXT = {
     privacy: 'Privacy policy',
     privacyUrl: 'https://techgym.jp/privacy-policy-en/',
     adSettings: 'Ad settings',
+    // web-only:start
     storeLink: '📱 Android app (Google Play)',
     storeNote: 'Google Play and the Google Play logo are trademarks of Google LLC.',
+    // web-only:end
     pauseTitle: '⏸ Paused',
     resume: 'Resume',
     pause: 'Pause',

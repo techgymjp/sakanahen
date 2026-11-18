@@ -500,8 +500,10 @@ if (plugin('App')) {
   });
 }
 
-// Web 版だけ、Android アプリ（Google Play）へのリンクを出す（アプリの中では出さない）
-if (!NATIVE) document.querySelectorAll('.store-link').forEach((el) => { el.hidden = false; });
+// web-only:start
+// Web 版だけ、Android アプリ（Google Play）へのリンクを出す（アプリ用のビルドではこの範囲ごと取り除く）
+document.querySelectorAll('.store-link').forEach((el) => { el.hidden = false; });
+// web-only:end
 
 // タイトル画面の下に、バージョン(アプリ版)・プライバシーポリシー・広告の設定(EU など)を出す
 if (NATIVE) {

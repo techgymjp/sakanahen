@@ -33,8 +33,10 @@
       <button class="yellow" data-go="screen-rank">🏆<span data-t="ranking">ランキング</span></button>
       <button class="yellow" id="btn-zukan">📖<span data-t="zukan">図鑑</span></button>
     </div>
-    <!-- Web 版だけ: Android アプリ（Google Play）へのリンク。アプリの中では出さない -->
+    <!-- web-only -->
+    <!-- Web 版だけ: Android アプリ（Google Play）へのリンク。アプリ用のビルド（npm run build:app）ではこの範囲ごと取り除く -->
     <p class="store-link" hidden><a href="https://play.google.com/store/apps/details?id=jp.techgym.sakanahen" target="_blank" rel="noopener" data-t="storeLink">📱 Android アプリ（Google Play）</a></p>
+    <!-- /web-only -->
     <!-- アプリ版だけ: バージョン・プライバシーポリシー・広告の設定（EU など） -->
     <p class="legal" id="legal" hidden>
       <span id="buildInfo"></span>
@@ -52,7 +54,9 @@
       <button id="btn-start2" class="primary" data-t="start">スタート！</button>
       <button id="btn-howto-back" class="back" data-t="back">← もどる</button>
     </div>
+    <!-- web-only -->
     <p class="store-link" hidden><a href="https://play.google.com/store/apps/details?id=jp.techgym.sakanahen" target="_blank" rel="noopener" data-t="storeLink">📱 Android アプリ（Google Play）</a><br><small data-t="storeNote">Google Play および Google Play ロゴは Google LLC の商標です。</small></p>
+    <!-- /web-only -->
   </section>
 
   <section id="screen-rank" class="screen">

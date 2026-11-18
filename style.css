@@ -275,10 +275,12 @@ h2, h3 { text-align: center; margin: 0 0 10px; }
 .best { text-align: center; color: #fff; font-weight: 900; font-size: 1.1rem; margin: 6px 0 0; text-shadow: 0 2px 0 var(--shadow); }
 .legal { text-align: center; color: #fff; font-size: .8rem; margin-top: 28px; opacity: .9; }
 .legal a { color: #fff; }
+/* web-only:start */
 .store-link { text-align: center; margin: 22px 0 0; font-weight: 700; }
 .store-link a { color: #fff; text-shadow: 0 2px 0 var(--shadow); }
 .store-link small { display: inline-block; margin-top: 6px; font-size: .7rem; font-weight: 500; color: #fff; opacity: .85; }
 .store-link[hidden] { display: none; }
+/* web-only:end */
 /* アプリ版は画面の下にバナー広告が出るので、その分だけ下を空ける */
 .native #app { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
 
