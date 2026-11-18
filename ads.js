@@ -13,7 +13,7 @@ window.Ads = (() => {
       // 本番の広告ユニット(AdMob の Android アプリ「さかなへんクイズ」)
       production: {
         interstitial: 'ca-app-pub-6411535997477460/3220594000',
-        rewarded: 'ca-app-pub-6411535997477460/5965640442',
+        rewarded: 'ca-app-pub-6411535997477460/5542011722',
         banner: 'ca-app-pub-6411535997477460/7159839012',
       },
     },
