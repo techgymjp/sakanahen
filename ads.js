@@ -14,7 +14,7 @@ window.Ads = (() => {
       production: {
         interstitial: 'ca-app-pub-6411535997477460/6079697227',
         rewarded: 'ca-app-pub-6411535997477460/5965640442',
-        banner: 'ca-app-pub-6411535997477460/9904885459',
+        banner: 'ca-app-pub-6411535997477460/7159839012',
       },
     },
     ios: {

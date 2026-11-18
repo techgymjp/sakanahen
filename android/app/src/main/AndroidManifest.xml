@@ -36,4 +36,8 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- 縦画面に固定している（screenOrientation）と、縦画面が必須の端末だけが対象になるため、
+         縦画面は必須ではないと明示する（タブレット・Chromebook などでもインストールできるように） -->
+    <uses-feature android:name="android.hardware.screen.portrait" android:required="false" />
 </manifest>
