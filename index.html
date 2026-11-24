@@ -108,11 +108,14 @@
     <div class="share">
       <p class="share-label" data-t="shareLabel">結果をシェアしよう！</p>
       <div class="share-buttons">
+        <!-- web-only -->
+        <!-- Web 版だけのシェアボタン。アプリ用のビルドではこの範囲ごと取り除き、下の「結果をシェア」（OS の共有メニュー）だけにする -->
         <a id="share-x" class="share-btn x" target="_blank" rel="noopener" data-t="shareX">𝕏 ポスト</a>
         <a id="share-line" class="share-btn line" target="_blank" rel="noopener">LINE</a>
         <a id="share-fb" class="share-btn fb" target="_blank" rel="noopener">Facebook</a>
-        <button id="share-more" class="share-btn more" hidden data-t="shareMore">その他</button>
         <button id="share-copy" class="share-btn copy">リンクをコピー</button>
+        <!-- /web-only -->
+        <button id="share-more" class="share-btn more" hidden data-t="shareMore">その他</button>
       </div>
     </div>
     <div class="buttons">

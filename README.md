@@ -24,7 +24,7 @@
 - 縦画面固定・全画面・プレイ中は画面を消さない
 - 戻るボタン: 出題中は一時停止（一時停止中なら再開）、あそびかたはタイトルへ、タイトル・結果画面ではアプリを終了
 - 別アプリに切り替えると自動で一時停止して音を止める（一時停止中は問題を隠し、タイムも止まる）
-- シェアは Android の共有メニュー
+- シェアは OS の共有メニュー（「結果をシェア」ボタン 1 つ。Web 版のシェアボタンはアプリには入れない）
 - 広告（AdMob）
   - バナー: タイトル・あそびかた・一時停止・結果画面の下中央（出題中は選択肢と重なるので出さない）
   - 全画面広告（インタースティシャル）: 「スタート」（タイトル・あそびかたから）、「タイトルへ」（あそびかた・一時停止・結果から）、一時停止からの「再開」、結果画面の「もう一度」のたびに毎回
@@ -36,7 +36,7 @@
 ビルドは GitHub Actions（`.github/workflows/android.yml`）で行います。
 
 1. `npm ci` → `npm run build:app`（`www/` に Web ファイルをコピーし、`ads-config.js` と `build-info.js` を生成）→ `npx cap sync android` → `./gradlew assembleDebug`
-   - `build:app` は、Web 版だけの部分（Google Play へのリンク。HTML は `<!-- web-only -->`〜`<!-- /web-only -->`、JS は `// web-only:start`〜`// web-only:end`、CSS は `/* web-only:start */`〜`/* web-only:end */` で囲む）を取り除き、`play.google.com` などが残っていたらビルドを止める。iOS の審査で「審査中に隠した機能」（Guideline 5.6）と見なされないようにするため（techgymjp/chabudai と同じ方法）
+   - `build:app` は、Web 版だけの部分（Google Play へのリンクと、Web 版のシェアボタン〔𝕏・LINE・Facebook・リンクをコピー〕。HTML は `<!-- web-only -->`〜`<!-- /web-only -->`、JS は `// web-only:start`〜`// web-only:end`、CSS は `/* web-only:start */`〜`/* web-only:end */` で囲む）を取り除き、`play.google.com` などが残っていたらビルドを止める。iOS の審査で「審査中に隠した機能」（Guideline 5.6）と見なされないようにするため（techgymjp/chabudai と同じ方法）
    - Web 版（GitHub Pages）はリポジトリのファイルをそのまま公開し、Vercel では `npm run build`（取り除かない）を使う
 2. 既定ブランチなら、Release `android-latest` の `sakanahen.apk` を差し替え（動作確認用・テスト広告）
    - リリース画面: https://github.com/techgymjp/sakanahen/releases/tag/android-latest （QR コード: `docs/apk-qr.png`）

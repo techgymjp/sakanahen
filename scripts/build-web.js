@@ -29,7 +29,7 @@ if (process.env.APP_BUILD === '1') {
   strip('style.css', /[ \t]*\/\* web-only:start \*\/[\s\S]*?\/\* web-only:end \*\/\n?/g);
   for (const rel of ['index.html', 'game.js', 'i18n.js', 'style.css']) {
     const text = fs.readFileSync(path.join(out, rel), 'utf8');
-    if (/play\.google\.com|web-only|store-link|storeLink/.test(text)) {
+    if (/play\.google\.com|web-only|store-link|storeLink|share-x|share-copy|x\.com\/intent|social-plugins\.line|facebook\.com\/sharer|clipboard/.test(text)) {
       console.error(`${rel} に Web 版だけの部分が残っています`);
       process.exit(1);
     }
