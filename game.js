@@ -237,22 +237,24 @@ function finish() {
 function setupShare(correct, time, redoUsed) {
   const url = SHARE_URL;
   const text = T().shareText(TOTAL, correct, time.toFixed(1), redoUsed);
+  const more = $('share-more');
+  // アプリでは、OS の共有メニューを開く「結果をシェア」ボタン 1 つだけ
+  const nativeShare = plugin('Share');
+  if (nativeShare) {
+    more.hidden = false;
+    more.textContent = T().shareApp;
+    more.onclick = () => nativeShare.share({ title: T().title, text, url, dialogTitle: T().shareApp }).catch(() => {});
+    return;
+  }
+  // web-only:start
+  // Web 版: X・LINE・Facebook・リンクをコピー。ブラウザの共有メニューが使えるときは「その他」も出す
+  // （アプリ用のビルドではこの範囲ごと取り除く）
   const enc = encodeURIComponent;
   $('share-x').href = `https://x.com/intent/post?text=${enc(text)}&url=${enc(url)}`;
   $('share-line').href = `https://social-plugins.line.me/lineit/share?url=${enc(url)}&text=${enc(text)}`;
   $('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${enc(url)}`;
-  // スマホなどOSの共有メニューが使える場合だけ「その他」を出す
-  const more = $('share-more');
   more.hidden = !navigator.share;
   more.onclick = () => navigator.share({ title: T().title, text, url }).catch(() => {});
-  // アプリでは Android の共有メニューだけを出す
-  const nativeShare = plugin('Share');
-  if (nativeShare) {
-    for (const id of ['share-x', 'share-line', 'share-fb', 'share-copy']) $(id).hidden = true;
-    more.hidden = false;
-    more.textContent = T().shareApp;
-    more.onclick = () => nativeShare.share({ title: T().title, text, url, dialogTitle: T().shareApp }).catch(() => {});
-  }
   const copy = $('share-copy');
   copy.textContent = T().copy;
   copy.onclick = async () => {
@@ -263,6 +265,7 @@ function setupShare(correct, time, redoUsed) {
       copy.textContent = T().copyFailed;
     }
   };
+  // web-only:end
 }
 
 // ---- 図鑑 ----
