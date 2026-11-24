@@ -25,7 +25,7 @@ window.Ads = (() => {
       },
       // 本番の広告ユニット(AdMob の iOS アプリ「さかなへんクイズ」)
       production: {
-        interstitial: 'ca-app-pub-6411535997477460/4653104913',
+        interstitial: 'ca-app-pub-6411535997477460/3832985449',
         rewarded: 'ca-app-pub-6411535997477460/8421171560',
         banner: 'ca-app-pub-6411535997477460/6106000383',
       },
